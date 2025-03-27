@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'index.html'
+      - 'main.go'
+      - 'Dockerfile'
 
 env:
   REGISTRY: ghcr.io
