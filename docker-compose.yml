@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: pandalanax/gpx-map-viewer:latest
+    image: ghcr.io/pandalanax/gpx-map-viewer:latest
     ports:
       - "8080:8080"
     volumes:
