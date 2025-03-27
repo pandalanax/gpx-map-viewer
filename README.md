@@ -13,7 +13,7 @@ version: "3.8"
 
 services:
   gpx-viewer:
-    image: pandalanax/gpx-map-viewer:latest
+    image: ghcr.io/pandalanax/gpx-map-viewer:latest
     ports:
       - "8080:8080"
     volumes:
