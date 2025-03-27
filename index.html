@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GPX Multi-Viewer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-gpx/gpx.js"></script>
+    <style>
+      #map {
+        height: 100vh;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+
+    <script>
+      var map = L.map("map").setView([51.1657, 10.4515], 6);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "&copy; OpenStreetMap contributors",
+      }).addTo(map);
+
+      var bounds = [];
+
+      // GPX-Dateien vom Server abrufen
+      fetch("/gpx-files")
+        .then((response) => response.json())
+        .then((files) => {
+          files.forEach((file) => {
+            var gpx = new L.GPX(`/gpx/${file}`, {
+              async: true,
+              markers: {
+                startIcon: null,
+                endIcon: null,
+              },
+              polyline_options: {
+                color: "blue",
+                opacity: 0.45,
+                weight: 3,
+                lineCap: "round",
+              },
+            })
+              .on("loaded", function (e) {
+                bounds.push(e.target.getBounds());
+                map.fitBounds(L.latLngBounds(bounds.flat()));
+              })
+              .addTo(map);
+          });
+        })
+        .catch((error) =>
+          console.error("Fehler beim Laden der GPX-Dateien:", error),
+        );
+    </script>
+  </body>
+</html>
