@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  gpx-viewer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: pandalanax/gpx-map-viewer:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./gpx_tracks:/app/gpx_tracks
+    restart: unless-stopped
