@@ -26,7 +26,7 @@
 
       var bounds = [];
 
-      // GPX-Dateien vom Server abrufen
+      // get gpx files from server
       fetch("/gpx-files")
         .then((response) => response.json())
         .then((files) => {
@@ -36,17 +36,14 @@
               markers: {
                 startIcon: null,
                 endIcon: null,
-                // Based on 'sym' waypoint key
                 wptIcons: {
                   "": null,
                 },
 
-                // Based on 'type' waypoint key
                 wptTypeIcons: {
                   "": null,
                 },
 
-                // Based on a regex over the waypoint's name
                 pointMatchers: [],
               },
               polyline_options: {
@@ -64,7 +61,7 @@
           });
         })
         .catch((error) =>
-          console.error("Fehler beim Laden der GPX-Dateien:", error),
+          console.error("Error trying to load the gpx files", error),
         );
     </script>
   </body>
