@@ -1,49 +1,45 @@
 <!doctype html>
 <html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GPX Multi-Viewer</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-gpx/gpx.js"></script>
-    <style>
-      #map {
-        height: 100vh;
-      }
-    </style>
-  </head>
 
-  <body>
-    <div id="map"></div>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GPX Multi-Viewer</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-gpx/gpx.js"></script>
+  <style>
+    #map {
+      height: 100vh;
+    }
+  </style>
+</head>
 
-    <script>
-      var map = L.map("map").setView([51.1657, 10.4515], 6);
+<body>
+  <div id="map"></div>
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
-      }).addTo(map);
+  <script>
+    var map = L.map("map").setView([51.1657, 10.4515], 6);
 
-      var bounds = [];
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
 
-      // get gpx files from server
-      fetch("/gpx-files")
-        .then((response) => response.json())
-        .then((files) => {
-          files.forEach((file) => {
-            var gpx = new L.GPX(`/gpx/${file}`, {
+    fetch("/gpx-files")
+      .then((response) => response.json())
+      .then((files) => {
+        const bounds = [];
+
+        // Create an array of Promises for each GPX load
+        const gpxPromises = files.map((file) => {
+          return new Promise((resolve) => {
+            const gpx = new L.GPX(`/gpx/${file}`, {
               async: true,
               markers: {
                 startIcon: null,
                 endIcon: null,
-                wptIcons: {
-                  "": null,
-                },
-
-                wptTypeIcons: {
-                  "": null,
-                },
-
+                wptIcons: {"": null},
+                wptTypeIcons: {"": null},
                 pointMatchers: [],
               },
               polyline_options: {
@@ -55,14 +51,20 @@
             })
               .on("loaded", function (e) {
                 bounds.push(e.target.getBounds());
-                map.fitBounds(L.latLngBounds(bounds.flat()));
+                resolve(); // resolve the promise when this file is loaded
               })
               .addTo(map);
           });
-        })
-        .catch((error) =>
-          console.error("Error trying to load the gpx files", error),
-        );
-    </script>
-  </body>
-</html>
+        });
+
+        // After all GPX files are loaded, compute global bounds
+        Promise.all(gpxPromises).then(() => {
+          const fullBounds = L.latLngBounds(bounds.flat());
+          map.fitBounds(fullBounds);
+        });
+      })
+      .catch((error) =>
+        console.error("Error trying to load the gpx files", error)
+      );
+  </body >
+</html >
