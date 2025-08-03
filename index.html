@@ -53,6 +53,10 @@
                 bounds.push(e.target.getBounds());
                 resolve(); // resolve the promise when this file is loaded
               })
+              .on("error", function (e) {
+                console.error("Error loading GPX file:", file, e);
+                resolve(); // Resolve anyway to not block Promise.all
+              })
               .addTo(map);
           });
         });
