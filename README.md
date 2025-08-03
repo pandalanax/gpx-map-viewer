@@ -28,3 +28,6 @@ services:
 
 - [leaflet](https://github.com/Leaflet/Leaflet)
 - [leaflet-gpx](https://github.com/mpetazzoni/leaflet-gpx)
+
+# Disclaimer
+This was [vibe coded](https://de.wikipedia.org/wiki/Vibe_Coding).
